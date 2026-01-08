@@ -1,4 +1,4 @@
-import { type Message } from "../../types/chat";
+import type { Message } from "../../chat/types/chat.types";
 
 export const MessageBubble = ({ message }: { message: Message }) => {
   const isMine = message.senderId === "me";
@@ -10,7 +10,7 @@ export const MessageBubble = ({ message }: { message: Message }) => {
           isMine ? "bg-green-600 text-white" : "bg-neutral-700 text-white"
         }`}
       >
-        {message.text}
+        {message.data}
       </div>
     </div>
   );

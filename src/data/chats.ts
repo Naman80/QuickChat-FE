@@ -1,43 +1,51 @@
-import { type Chat } from "../types/chat.ts";
+import type { ChatState } from "../chat/types/chat.types";
 
-export const chats: Chat[] = [
-  {
-    id: "chat-1",
-    participants: [
-      { id: "u1", name: "Aditya" },
-      { id: "me", name: "You" },
-    ],
-    messages: [
-      {
-        id: "m1",
-        chatId: "chat-1",
-        senderId: "u1",
-        text: "Hey, can we connect at 1:30?",
-        timestamp: Date.now() - 600000,
-      },
-      {
-        id: "m2",
-        chatId: "chat-1",
-        senderId: "me",
-        text: "Sure, works for me.",
-        timestamp: Date.now() - 300000,
-      },
-    ],
+export const data: ChatState = {
+  conversationSummaries: [
+    {
+      id: "chat-1",
+      title: "Aditya-1",
+      lastMessage: "We will connect at",
+      lastMessageAt: Date.now() - 3000,
+      unreadCount: 0,
+    },
+    {
+      id: "chat-2",
+      title: "Aditya-2",
+      lastMessage: "We will connect at",
+      lastMessageAt: Date.now() - 9000,
+      unreadCount: 0,
+    },
+  ],
+  conversations: {
+    "chat-1": {
+      conversationId: "chat-1",
+      participants: [
+        {
+          id: "user-1",
+          name: "Aditya-1",
+        },
+        {
+          id: "user-1",
+          name: "Aditya-1",
+        },
+      ],
+      messages: [],
+    },
+    "chat-2": {
+      conversationId: "chat-2",
+      participants: [
+        {
+          id: "user-2",
+          name: "Aditya-2",
+        },
+        {
+          id: "user-2",
+          name: "Aditya-2",
+        },
+      ],
+      messages: [],
+    },
   },
-  {
-    id: "chat-2",
-    participants: [
-      { id: "u2", name: "Coding Group" },
-      { id: "me", name: "You" },
-    ],
-    messages: [
-      {
-        id: "m3",
-        chatId: "chat-2",
-        senderId: "u2",
-        text: "Did you check the React docs?",
-        timestamp: Date.now() - 900000,
-      },
-    ],
-  },
-];
+  activeConversationId: "chat-1",
+};

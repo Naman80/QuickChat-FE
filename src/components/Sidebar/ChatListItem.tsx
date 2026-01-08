@@ -1,24 +1,26 @@
-import { type Chat } from "../../types/chat";
+import type { ConversationSummary } from "../../chat/types/chat.types";
 
-type Props = {
-  chat: Chat;
+interface IChatListItem {
+  conversation: ConversationSummary;
   isActive: boolean;
-  onClick: () => void;
-};
+  onClick: (conversationId: string) => void;
+}
 
-export const ChatListItem = ({ chat, isActive, onClick }: Props) => {
-  const lastMessage = chat.messages.at(-1);
-
+export const ChatListItem = ({
+  conversation,
+  isActive,
+  onClick,
+}: IChatListItem) => {
   return (
     <div
-      onClick={onClick}
+      onClick={() => onClick(conversation.id)}
       className={`px-4 py-3 cursor-pointer hover:bg-[#373737] rounded-2xl ${
         isActive ? "bg-[#373737]" : ""
       }`}
     >
-      <div className="font-medium">{chat.participants[0].name}</div>
+      <div className="font-medium">{conversation.title}</div>
       <div className="text-sm text-neutral-400 truncate">
-        {lastMessage?.text}
+        {conversation.lastMessage}
       </div>
     </div>
   );

@@ -1,21 +1,25 @@
-import { type Chat } from "../../types/chat";
+import type { ConversationSummary } from "../../chat/types/chat.types";
 import { ChatListItem } from "./ChatListItem";
 
-type Props = {
-  chats: Chat[];
-  activeChatId: string | null;
-  onSelect: (id: string) => void;
-};
+interface ISidebar {
+  conversationSummaries: ConversationSummary[];
+  activeConversationId: string | null;
+  onSelect: (conversationId: string) => void;
+}
 
-export const Sidebar = ({ chats, activeChatId, onSelect }: Props) => {
+export const Sidebar = ({
+  conversationSummaries,
+  activeConversationId,
+  onSelect,
+}: ISidebar) => {
   return (
     <aside className="w-100 border-r border-neutral-800 overflow-y-auto p-2 flex flex-col gap-2 bg-[#171717]">
-      {chats.map((chat) => (
+      {conversationSummaries.map((conversation) => (
         <ChatListItem
-          key={chat.id}
-          chat={chat}
-          isActive={chat.id === activeChatId}
-          onClick={() => onSelect(chat.id)}
+          key={conversation.id}
+          conversation={conversation}
+          isActive={conversation.id === activeConversationId}
+          onClick={onSelect}
         />
       ))}
     </aside>
