@@ -2,43 +2,45 @@ import type { ChatState, Message } from "./types/chat.types";
 
 export const CHAT_ACTION_TYPES = {
   MESSAGE_SEND_INIT: "MESSAGE_SEND_INIT",
-  SET_ACTIVE_CONVERSATION_ID: " SET_ACTIVE_CONVERSATION_ID",
+  SET_ACTIVE_CONVERSATION_ID: "SET_ACTIVE_CONVERSATION_ID",
+  MESSAGE_RECEIVED: "MESSAGE_RECEIVED",
 } as const;
 
-// type ChatActionType =
-//   (typeof CHAT_ACTION_TYPES)[keyof typeof CHAT_ACTION_TYPES];
+export type ChatActionType =
+  (typeof CHAT_ACTION_TYPES)[keyof typeof CHAT_ACTION_TYPES];
 
-export type ChatAction =
-  | {
-      type: "MESSAGE_SEND_INIT";
-      payload: {
-        conversationId: string;
-        clientMessageId: string;
-        text: string;
-        createdAt: number;
-      };
-    }
-  | {
-      type: "SET_ACTIVE_CONVERSATION_ID";
-      payload: {
-        conversationId: string;
-      };
-    }
-  | {
-      type: "MESSAGE_RECEIVED";
-      payload: {
-        roomId: string;
-        messageId: string;
-        text: string;
-        senderId: string;
-        createdAt: number;
-      };
-    };
+export type ChatActionPayloadMap = {
+  MESSAGE_SEND_INIT: {
+    conversationId: string;
+    clientMessageId: string;
+    text: string;
+    createdAt: number;
+  };
+
+  SET_ACTIVE_CONVERSATION_ID: {
+    conversationId: string;
+  };
+
+  MESSAGE_RECEIVED: {
+    roomId: string;
+    messageId: string;
+    text: string;
+    senderId: string;
+    createdAt: number;
+  };
+};
+
+export type ChatAction = {
+  [K in ChatActionType]: {
+    type: K;
+    payload: ChatActionPayloadMap[K];
+  };
+}[ChatActionType];
 
 export function chatReducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
-    case "MESSAGE_SEND_INIT": {
-      const { conversationId, clientMessageId, text, createdAt } =
+    case CHAT_ACTION_TYPES.MESSAGE_SEND_INIT: {
+      const { clientMessageId, conversationId, createdAt, text } =
         action.payload;
 
       const message: Message = {
@@ -66,7 +68,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         },
       };
     }
-    case "SET_ACTIVE_CONVERSATION_ID": {
+    case CHAT_ACTION_TYPES.SET_ACTIVE_CONVERSATION_ID: {
       const { conversationId } = action.payload;
 
       return {
@@ -74,7 +76,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         activeConversationId: conversationId,
       };
     }
-    case "MESSAGE_RECEIVED": {
+    case CHAT_ACTION_TYPES.MESSAGE_RECEIVED: {
       const { roomId, messageId, text, senderId, createdAt } = action.payload;
 
       const conversation = state.conversations[roomId] ?? { messages: [] };

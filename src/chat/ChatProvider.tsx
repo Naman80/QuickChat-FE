@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from "react";
 import { ChatContext } from "./ChatContext";
-import { chatReducer, type ChatAction } from "./ChatReducer";
+import { CHAT_ACTION_TYPES, chatReducer, type ChatAction } from "./ChatReducer";
 import {
   useWebSocket,
   type WebSocketContextValue,
@@ -13,6 +13,7 @@ import {
 import type { ChatState } from "./types/chat.types";
 
 import { data } from "../data/chats";
+import { WS_EVENTS } from "../ws/ws.events";
 
 const initialChatState: ChatState = { ...data };
 
@@ -31,7 +32,7 @@ const chatStateHelpers = (
 
     // 1. Optimistic state update
     dispatch({
-      type: "MESSAGE_SEND_INIT",
+      type: CHAT_ACTION_TYPES.MESSAGE_SEND_INIT,
       payload: {
         conversationId: activeConversationId,
         clientMessageId,
@@ -42,7 +43,7 @@ const chatStateHelpers = (
 
     // 2. Side effect
     ws.sendEvent({
-      type: "SEND_MESSAGE",
+      type: WS_EVENTS.SEND_MESSAGE,
       payload: {
         roomId: activeConversationId,
         clientMessageId,
@@ -82,13 +83,14 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = ws.subscribe((event) => {
       switch (event.type) {
-        // case "NEW_MESSAGE": {
-        //   dispatch({
-        //     type: "MESSAGE_RECEIVED",
-        //     payload: event.payload,
-        //   });
-        //   break;
-        // }
+        case WS_EVENTS.NEW_MESSAGE: {
+          //
+          dispatch({
+            type: CHAT_ACTION_TYPES.MESSAGE_RECEIVED,
+            payload: { ...event.payload },
+          });
+          break;
+        }
 
         // case "MESSAGE_ACK": {
         //   dispatch({
