@@ -1,4 +1,9 @@
-import { useReducer, type ActionDispatch, type ReactNode } from "react";
+import {
+  useEffect,
+  useReducer,
+  type ActionDispatch,
+  type ReactNode,
+} from "react";
 import { ChatContext } from "./ChatContext";
 import { chatReducer, type ChatAction } from "./ChatReducer";
 import {
@@ -39,7 +44,7 @@ const chatStateHelpers = (
     ws.sendEvent({
       type: "SEND_MESSAGE",
       payload: {
-        conversationId: activeConversationId,
+        roomId: activeConversationId,
         clientMessageId,
         text,
         createdAt,
@@ -57,6 +62,13 @@ const chatStateHelpers = (
         conversationId,
       },
     });
+
+    ws.sendEvent({
+      type: "JOIN_ROOM",
+      payload: {
+        roomId: conversationId,
+      },
+    });
   }
 
   return { sendMessage, setActiveConversationId };
@@ -65,6 +77,34 @@ const chatStateHelpers = (
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const ws = useWebSocket();
+
+  // ⬇️ NEW: subscribe to WS events
+  useEffect(() => {
+    const unsubscribe = ws.subscribe((event) => {
+      switch (event.type) {
+        // case "NEW_MESSAGE": {
+        //   dispatch({
+        //     type: "MESSAGE_RECEIVED",
+        //     payload: event.payload,
+        //   });
+        //   break;
+        // }
+
+        // case "MESSAGE_ACK": {
+        //   dispatch({
+        //     type: "MESSAGE_SEND_CONFIRMED",
+        //     payload: event.payload,
+        //   });
+        //   break;
+        // }
+
+        default:
+          break;
+      }
+    });
+
+    return unsubscribe;
+  }, [ws]);
 
   const { sendMessage, setActiveConversationId } = chatStateHelpers(
     ws,

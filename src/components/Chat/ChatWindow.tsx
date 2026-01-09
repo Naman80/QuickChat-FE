@@ -16,6 +16,8 @@ export const ChatWindow = ({ conversation, onSend }: Props) => {
     );
   }
 
+  //TODO: Convo name is wrong we have to change that
+
   return (
     <section className="flex-1 flex flex-col bg-[#212121] ">
       <header className="p-4 border-b border-neutral-800 bg-[#171717] font-bold">

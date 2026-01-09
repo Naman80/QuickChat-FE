@@ -3,6 +3,7 @@ import type { WSMessage } from "./ws.events";
 
 export interface WebSocketContextValue {
   sendEvent: (event: WSMessage) => void;
+  subscribe: (handler: (event: WSMessage) => void) => () => void; // we have to return unsubscribe function
 }
 
 export const WebSocketContext = createContext<WebSocketContextValue | null>(

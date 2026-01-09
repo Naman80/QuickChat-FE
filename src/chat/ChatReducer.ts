@@ -23,6 +23,16 @@ export type ChatAction =
       payload: {
         conversationId: string;
       };
+    }
+  | {
+      type: "MESSAGE_RECEIVED";
+      payload: {
+        roomId: string;
+        messageId: string;
+        text: string;
+        senderId: string;
+        createdAt: number;
+      };
     };
 
 export function chatReducer(state: ChatState, action: ChatAction): ChatState {
@@ -62,6 +72,33 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return {
         ...state,
         activeConversationId: conversationId,
+      };
+    }
+    case "MESSAGE_RECEIVED": {
+      const { roomId, messageId, text, senderId, createdAt } = action.payload;
+
+      const conversation = state.conversations[roomId] ?? { messages: [] };
+
+      return {
+        ...state,
+        conversations: {
+          ...state.conversations,
+          [roomId]: {
+            ...conversation,
+            messages: [
+              ...conversation.messages,
+              {
+                id: messageId,
+                senderId,
+                clientMessageId: "",
+                type: "text",
+                data: text,
+                status: "sent",
+                timestamp: createdAt,
+              },
+            ],
+          },
+        },
       };
     }
     default:
