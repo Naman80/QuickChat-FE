@@ -3,18 +3,26 @@ import { deserializeEvent, serializeEvent } from "./ws.utils";
 import { WebSocketContext } from "./WebSocketContext";
 import type { WSMessage } from "./ws.events";
 import { WS_URL } from "./ws.constants";
+import { useAuthContext } from "../auth/AuthContext";
+import { getLocalStorageItem, LOCALSTORAGE } from "../../utils/localStorage";
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { user } = useAuthContext();
+
   const socketRef = useRef<WebSocket | null>(null);
-  // const listeners = new Set<(parsedEvent: WSMessage) => void>();
+
   const listenersRef = useRef<Set<(parsedEvent: WSMessage) => void>>(new Set());
 
   const [status, setStatus] = useState("connecting");
 
   useEffect(() => {
-    const socket = new WebSocket(WS_URL);
+    const token = getLocalStorageItem(LOCALSTORAGE.TOKEN);
+
+    const WS_TOKEN_URL = `${WS_URL}?token=${token}`;
+
+    const socket = new WebSocket(WS_TOKEN_URL);
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -44,7 +52,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       socket.close();
     };
-  }, []);
+  }, [user]);
 
   const sendEvent = (event: WSMessage) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
@@ -56,11 +64,11 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const subscribe = (handler: (event: WSMessage) => void) => {
     listenersRef.current.add(handler);
-    // we have return a way to unsubscribe from socket events
+    // we return a way to unsubscribe from socket events
     return () => listenersRef.current.delete(handler);
   };
 
-  console.log("WS STATUS : ", status);
+  console.log("WS PROVIDER", status, user);
 
   return (
     <WebSocketContext.Provider value={{ sendEvent, subscribe }}>

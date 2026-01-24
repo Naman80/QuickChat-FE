@@ -12,7 +12,7 @@ import {
 } from "../ws/WebSocketContext";
 import type { ChatState } from "./types/chat.types";
 
-import { data } from "../data/chats";
+import { data } from "../../data/chats";
 import { WS_EVENTS } from "../ws/ws.events";
 
 const initialChatState: ChatState = { ...data };
@@ -20,7 +20,7 @@ const initialChatState: ChatState = { ...data };
 const chatStateHelpers = (
   ws: WebSocketContextValue,
   state: ChatState,
-  dispatch: ActionDispatch<[ChatAction]>
+  dispatch: ActionDispatch<[ChatAction]>,
 ) => {
   const { activeConversationId } = state;
 
@@ -111,7 +111,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const { sendMessage, setActiveConversationId } = chatStateHelpers(
     ws,
     state,
-    dispatch
+    dispatch,
   );
 
   return (

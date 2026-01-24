@@ -1,4 +1,4 @@
-import type { ConversationSummary } from "../../chat/types/chat.types";
+import type { ConversationSummary } from "../../modules/chat/types/chat.types";
 
 interface IChatListItem {
   conversation: ConversationSummary;
@@ -18,19 +18,20 @@ export const ChatListItem = ({
         isActive ? "bg-[#373737]" : ""
       }`}
     >
-      <div className="rounded-full h-12 w-16 bg-gray-400"></div>
-      <div className="flex flex-col gap-1 w-full">
-        <div className="flex flex-row justify-between items-center">
-          <span className="font-medium">{conversation.title}</span>
-          <span className="text-xs mt-1 ml-1 text-neutral-400">
-            {/* {conversation.lastMessageAt} */}
-            Yesterday
-          </span>
-        </div>
-        <div className="text-sm text-neutral-400 truncate">
-          {conversation.lastMessage}
-        </div>
+      <div className="h-10 w-10 rounded-full bg-[#171717] flex items-center justify-center text-xs text-neutral-500 uppercase">
+        {conversation.title[0]}
       </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sm font-semibold truncate">{conversation.title}</h3>
+        <p className="text-xs text-neutral-500 truncate">
+          {conversation.lastMessage}
+        </p>
+      </div>
+      {conversation.unreadCount > 0 && (
+        <div className="flex items-center justify-center h-5 bg-green-600 text-white text-xs rounded-full">
+          {conversation.unreadCount}
+        </div>
+      )}
     </div>
   );
 };

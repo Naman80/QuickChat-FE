@@ -7,13 +7,13 @@ export interface WebSocketContextValue {
 }
 
 export const WebSocketContext = createContext<WebSocketContextValue | null>(
-  null
+  null,
 );
 
 // hook to use socket functions
 export const useWebSocket = () => {
   const ctx = useContext(WebSocketContext);
-  console.log(ctx, "socket context");
+  // console.log(ctx, "socket context");
 
   if (!ctx)
     throw new Error("useWebSocket must be used within WebSocketProvider");

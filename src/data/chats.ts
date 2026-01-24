@@ -1,6 +1,7 @@
-import type { ChatState } from "../chat/types/chat.types";
+import type { ChatState } from "../modules/chat/types/chat.types";
 
 export const data: ChatState = {
+  activeConversationId: null,
   conversationSummaries: [
     {
       id: "chat-1",
@@ -21,31 +22,47 @@ export const data: ChatState = {
     "chat-1": {
       conversationId: "chat-1",
       participants: [
+        { id: "user-1", name: "Aditya" },
+        { id: "me", name: "You" },
+      ],
+      messages: [
         {
-          id: "user-1",
-          name: "Aditya",
+          id: "1",
+          clientMessageId: "1",
+          senderId: "me",
+          type: "text",
+          data: "Hello! How are you?",
+          status: "read",
+          timestamp: Date.now() - 3600000,
         },
         {
-          id: "user-2",
-          name: "naman",
+          id: "2",
+          clientMessageId: "2",
+          senderId: "user-1",
+          type: "text",
+          data: "I'm doing well, thanks! How about you?",
+          status: "read",
+          timestamp: Date.now() - 3000000,
+        },
+        {
+          id: "3",
+          clientMessageId: "3",
+          senderId: "me",
+          type: "text",
+          data: "I'm good too. When are we meeting?",
+          status: "read",
+          timestamp: Date.now() - 2400000,
+        },
+        {
+          id: "4",
+          clientMessageId: "4",
+          senderId: "user-1",
+          type: "text",
+          data: "We will connect at 6 PM tomorrow.",
+          status: "read",
+          timestamp: Date.now() - 3000,
         },
       ],
-      messages: [],
     },
-    // "chat-2": {
-    //   conversationId: "chat-2",
-    //   participants: [
-    //     {
-    //       id: "user-2",
-    //       name: "Aditya-2",
-    //     },
-    //     {
-    //       id: "user-1",
-    //       name: "Aditya-2",
-    //     },
-    //   ],
-    //   messages: [],
-    // },
   },
-  activeConversationId: null,
 };

@@ -12,8 +12,6 @@ export const ChatContext = createContext<IChatContext | null>(null);
 export const useChatContext = () => {
   const ctx = useContext(ChatContext);
 
-  console.log(ctx, " chat context");
-
   if (!ctx) throw new Error("useChatContext must be used within ChatProvider");
   return ctx;
 };

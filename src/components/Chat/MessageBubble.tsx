@@ -1,4 +1,4 @@
-import type { Message } from "../../chat/types/chat.types";
+import type { Message } from "../../modules/chat/types/chat.types";
 
 export const MessageBubble = ({ message }: { message: Message }) => {
   const isMine = message.senderId === "me";
