@@ -1,4 +1,4 @@
-export interface User {
+export interface ChatUser {
   id: string;
   name: string;
   avatarUrl?: string;
@@ -16,7 +16,7 @@ export type Message = {
 
 export type Conversation = {
   conversationId: string;
-  participants: User[];
+  participants: ChatUser[];
   messages: Message[];
 };
 
@@ -31,5 +31,5 @@ export type ConversationSummary = {
 export type ChatState = {
   conversationSummaries: ConversationSummary[];
   conversations: Record<string, Conversation>;
-  activeConversationId: string | null;
+  activeConversation: Conversation | null;
 };

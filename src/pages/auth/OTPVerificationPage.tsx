@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../modules/auth/AuthContext";
+
 import { getLocalStorageItem, LOCALSTORAGE } from "../../utils/localStorage";
+import { useSessionContext } from "../../modules/session/SessionContext";
 
 const OTP_LENGTH = 6;
 const RESEND_INTERVAL = 60;
 
-export const OTPVerification = () => {
+export const OTPVerificationPage = () => {
   const navigate = useNavigate();
-  const { verifyOTP, login } = useAuthContext();
+  const { requestOtp, verifyOtpAndStartSession } = useSessionContext();
 
-  const phone = useMemo(() => getLocalStorageItem(LOCALSTORAGE.USER_PHONE), []);
+  const phone = getLocalStorageItem(LOCALSTORAGE.USER_PHONE);
 
+  // State
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +62,7 @@ export const OTPVerification = () => {
       try {
         setIsLoading(true);
         setError(null);
-        await verifyOTP(phone, otp);
+        await verifyOtpAndStartSession(phone, otp);
         navigate("/chat");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Invalid OTP");
@@ -68,7 +70,7 @@ export const OTPVerification = () => {
         setIsLoading(false);
       }
     },
-    [otp, phone, verifyOTP, navigate, isOtpValid],
+    [otp, phone, verifyOtpAndStartSession, navigate, isOtpValid],
   );
 
   const handleResendOTP = useCallback(async () => {
@@ -77,11 +79,11 @@ export const OTPVerification = () => {
     try {
       setError(null);
       setSecondsLeft(RESEND_INTERVAL);
-      await login(phone);
+      await requestOtp(phone);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to resend OTP");
     }
-  }, [phone, login, canResend]);
+  }, [phone, requestOtp, canResend]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

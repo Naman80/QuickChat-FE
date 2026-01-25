@@ -1,7 +1,7 @@
-import type { ChatState } from "../modules/chat/types/chat.types";
+import type { ChatState } from "../modules/internal/chat/types/chat.types";
 
 export const data: ChatState = {
-  activeConversationId: null,
+  activeConversation: null,
   conversationSummaries: [
     {
       id: "chat-1",

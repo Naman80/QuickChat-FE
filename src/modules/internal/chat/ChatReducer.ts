@@ -2,7 +2,7 @@ import type { ChatState, Message } from "./types/chat.types";
 
 export const CHAT_ACTION_TYPES = {
   MESSAGE_SEND_INIT: "MESSAGE_SEND_INIT",
-  SET_ACTIVE_CONVERSATION_ID: "SET_ACTIVE_CONVERSATION_ID",
+  SET_ACTIVE_CONVERSATION: "SET_ACTIVE_CONVERSATION",
   MESSAGE_RECEIVED: "MESSAGE_RECEIVED",
 } as const;
 
@@ -17,7 +17,7 @@ export type ChatActionPayloadMap = {
     createdAt: number;
   };
 
-  SET_ACTIVE_CONVERSATION_ID: {
+  SET_ACTIVE_CONVERSATION: {
     conversationId: string;
   };
 
@@ -68,12 +68,12 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         },
       };
     }
-    case CHAT_ACTION_TYPES.SET_ACTIVE_CONVERSATION_ID: {
+    case CHAT_ACTION_TYPES.SET_ACTIVE_CONVERSATION: {
       const { conversationId } = action.payload;
 
       return {
         ...state,
-        activeConversationId: conversationId,
+        activeConversation: state.conversations[conversationId],
       };
     }
     case CHAT_ACTION_TYPES.MESSAGE_RECEIVED: {

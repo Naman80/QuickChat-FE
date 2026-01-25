@@ -1,31 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-import { AuthContext } from "./AuthContext";
-import type { AuthProviderProps, AuthContextType, User } from "./AuthContext";
+import { useState, useCallback, type ReactNode } from "react";
 import {
-  clearLocalStorage,
-  getLocalStorageItem,
   LOCALSTORAGE,
-  removeLocalStorageItem,
   setLocalStorageItem,
-} from "../../utils/localStorage";
+  removeLocalStorageItem,
+  getLocalStorageItem,
+} from "../../../utils/localStorage";
+import { AuthContext } from "./AuthContext";
+import type { AuthContextValue, User } from "./AuthContext";
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(() => {
+    const user = getLocalStorageItem(LOCALSTORAGE.USER);
+    const token = getLocalStorageItem(LOCALSTORAGE.TOKEN);
 
-  // Check if user is already logged in on mount
-  useEffect(() => {
-    const storedUser = getLocalStorageItem(LOCALSTORAGE.USER);
-    const storedToken = getLocalStorageItem(LOCALSTORAGE.TOKEN);
-
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
+    if (user && token) {
+      return user;
     }
+    return null;
+  });
 
-    setIsLoading(false);
-  }, []);
-
-  const login = useCallback(async (phone: string) => {
+  const requestOtp = useCallback(async (phone: string) => {
     try {
       const response = await fetch("/auth/request-otp", {
         method: "POST",
@@ -47,7 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, []);
 
-  const verifyOTP = useCallback(async (phone: string, otp: string) => {
+  const verifyOtp = useCallback(async (phone: string, otp: string) => {
     // Call backend API to verify OTP
     try {
       const response = await fetch("/auth/verify-otp", {
@@ -66,7 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Store user data and token
       setUser(data.userDetails);
-      setLocalStorageItem(LOCALSTORAGE.USER, JSON.stringify(data.userDetails));
+      setLocalStorageItem(LOCALSTORAGE.USER, data.userDetails);
       setLocalStorageItem(LOCALSTORAGE.TOKEN, data.accessToken);
       removeLocalStorageItem(LOCALSTORAGE.USER_PHONE);
     } catch (error) {
@@ -75,20 +69,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, []);
 
-  const logout = useCallback(() => {
-    setUser(null);
-    // removeLocalStorageItem(LOCALSTORAGE.USER);
-    // removeLocalStorageItem(LOCALSTORAGE.TOKEN);
-    // removeLocalStorageItem(LOCALSTORAGE.USER_PHONE);
-    clearLocalStorage();
+  const restoreUser = useCallback((user: User) => {
+    setUser(user);
   }, []);
 
-  const value: AuthContextType = {
+  const clearUser = useCallback(() => {
+    setUser(null);
+  }, []);
+
+  console.log("Auth Provider rendered");
+
+  const value: AuthContextValue = {
     user,
-    isLoading,
-    login,
-    verifyOTP,
-    logout,
+    requestOtp,
+    verifyOtp,
+    restoreUser,
+    clearUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

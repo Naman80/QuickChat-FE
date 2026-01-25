@@ -1,4 +1,4 @@
-import type { Message } from "../../modules/chat/types/chat.types";
+import type { Message } from "../../modules/internal/chat/types/chat.types";
 import { MessageBubble } from "./MessageBubble";
 
 export const MessageList = ({ messages }: { messages: Message[] }) => {

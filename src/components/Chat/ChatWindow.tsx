@@ -1,6 +1,6 @@
 import { MessageList } from "./MessageList";
 import { MessageInput } from "./MessageInput";
-import type { Conversation } from "../../modules/chat/types/chat.types";
+import type { Conversation } from "../../modules/internal/chat/types/chat.types";
 
 type Props = {
   conversation: Conversation | null;

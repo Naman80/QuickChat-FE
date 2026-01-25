@@ -7,12 +7,11 @@ import {
 import { ChatContext } from "./ChatContext";
 import { CHAT_ACTION_TYPES, chatReducer, type ChatAction } from "./ChatReducer";
 import {
-  useWebSocket,
+  useWebSocketInternal,
   type WebSocketContextValue,
 } from "../ws/WebSocketContext";
 import type { ChatState } from "./types/chat.types";
-
-import { data } from "../../data/chats";
+import { data } from "../../../data/chats";
 import { WS_EVENTS } from "../ws/ws.events";
 
 const initialChatState: ChatState = { ...data };
@@ -22,10 +21,10 @@ const chatStateHelpers = (
   state: ChatState,
   dispatch: ActionDispatch<[ChatAction]>,
 ) => {
-  const { activeConversationId } = state;
+  const { activeConversation } = state;
 
   function sendMessage(text: string) {
-    if (!text.trim() || !activeConversationId) return;
+    if (!text.trim() || !activeConversation) return;
 
     const clientMessageId = crypto.randomUUID();
     const createdAt = Date.now();
@@ -34,7 +33,7 @@ const chatStateHelpers = (
     dispatch({
       type: CHAT_ACTION_TYPES.MESSAGE_SEND_INIT,
       payload: {
-        conversationId: activeConversationId,
+        conversationId: activeConversation.conversationId,
         clientMessageId,
         text,
         createdAt,
@@ -45,7 +44,7 @@ const chatStateHelpers = (
     ws.sendEvent({
       type: WS_EVENTS.SEND_MESSAGE,
       payload: {
-        roomId: activeConversationId,
+        roomId: activeConversation.conversationId,
         clientMessageId,
         text,
         createdAt,
@@ -56,9 +55,9 @@ const chatStateHelpers = (
     });
   }
 
-  function setActiveConversationId(conversationId: string) {
+  function setActiveConversation(conversationId: string) {
     dispatch({
-      type: "SET_ACTIVE_CONVERSATION_ID",
+      type: "SET_ACTIVE_CONVERSATION",
       payload: {
         conversationId,
       },
@@ -72,12 +71,16 @@ const chatStateHelpers = (
     });
   }
 
-  return { sendMessage, setActiveConversationId };
+  function createNewChat() {
+    console.log("createNewChat");
+  }
+
+  return { createNewChat, sendMessage, setActiveConversation };
 };
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
-  const ws = useWebSocket();
+  const ws = useWebSocketInternal();
 
   // ⬇️ NEW: subscribe to WS events
   useEffect(() => {
@@ -108,18 +111,13 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     return unsubscribe;
   }, [ws]);
 
-  const { sendMessage, setActiveConversationId } = chatStateHelpers(
-    ws,
-    state,
-    dispatch,
-  );
+  const stateHelpers = chatStateHelpers(ws, state, dispatch);
 
   return (
     <ChatContext.Provider
       value={{
         ...state,
-        sendMessage,
-        setActiveConversationId,
+        ...stateHelpers,
       }}
     >
       {children}

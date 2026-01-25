@@ -1,4 +1,4 @@
-import type { ConversationSummary } from "../../modules/chat/types/chat.types";
+import type { ConversationSummary } from "../../modules/internal/chat/types/chat.types";
 
 interface IChatListItem {
   conversation: ConversationSummary;

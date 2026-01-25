@@ -1,38 +1,43 @@
-import { useState } from "react";
-import { useAuthContext } from "../../modules/auth/AuthContext";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSessionContext } from "../../modules/session/SessionContext";
 
-export const PhoneInput = () => {
-  const [phone, setPhone] = useState("");
+export const PhoneInputPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuthContext();
+
+  const { requestOtp } = useSessionContext();
   const navigate = useNavigate();
+
+  const phoneRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!phone) {
+    if (!phoneRef.current?.value) {
       setError("Please enter a phone number");
       return;
     }
 
-    // // Basic phone number validation
-    // const phoneRegex = /^[6-9]\d{9}$/;
-    // if (!phoneRegex.test(phone.replace(/\D/g, ""))) {
-    //   setError("Please enter a valid Indian phone number");
-    //   return;
-    // }
+    const phoneNumber = phoneRef.current.value.trim();
+
+    // Basic phone number validation
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(phoneNumber.replace(/\D/g, ""))) {
+      setError("Please enter a valid Indian phone number");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
-      await login(phone);
+      await requestOtp(phoneNumber);
       navigate("/verify-otp");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send OTP");
     } finally {
+      phoneRef.current = null;
       setIsLoading(false);
     }
   };
@@ -56,8 +61,7 @@ export const PhoneInput = () => {
             <input
               type="tel"
               id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              ref={phoneRef}
               placeholder="Enter your 10-digit phone number"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={isLoading}
@@ -70,7 +74,7 @@ export const PhoneInput = () => {
 
           <button
             type="submit"
-            disabled={isLoading || !phone}
+            disabled={isLoading}
             className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? "Sending OTP..." : "Send OTP"}

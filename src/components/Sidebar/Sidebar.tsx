@@ -1,7 +1,6 @@
-import type { ConversationSummary } from "../../modules/chat/types/chat.types";
+import type { ConversationSummary } from "../../modules/internal/chat/types/chat.types";
+import { useSessionContext } from "../../modules/session/SessionContext";
 import { ChatListItem } from "./ChatListItem";
-import { useAuthContext } from "../../modules/auth/AuthContext";
-
 interface ISidebar {
   conversationSummaries: ConversationSummary[];
   activeConversationId: string | null;
@@ -13,7 +12,7 @@ export const Sidebar = ({
   activeConversationId,
   onSelect,
 }: ISidebar) => {
-  const { user, logout } = useAuthContext();
+  const { user, logout } = useSessionContext();
 
   return (
     <aside className="w-100 border-r border-neutral-800 overflow-y-auto p-2 flex flex-col gap-2 bg-[#171717]">
@@ -33,7 +32,13 @@ export const Sidebar = ({
         />
       ))}
 
-      <div className="mt-auto p-4">
+      <div className="mt-auto p-4 flex flex-col gap-5">
+        <button
+          // onClick={createNewChat}
+          className="w-full py-2 px-4 bg-green-500 text-white font-semibold rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+        >
+          Create Room
+        </button>
         <button
           onClick={logout}
           className="w-full py-2 px-4 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"

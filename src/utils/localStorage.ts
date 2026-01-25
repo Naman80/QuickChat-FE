@@ -1,3 +1,5 @@
+import type { User } from "../modules/internal/auth/AuthContext";
+
 export const LOCALSTORAGE = {
   USER: "userDetails",
   USER_PHONE: "userPhoneNumber",
@@ -6,12 +8,40 @@ export const LOCALSTORAGE = {
 
 type LocalStorageKey = (typeof LOCALSTORAGE)[keyof typeof LOCALSTORAGE];
 
-export function getLocalStorageItem(key: LocalStorageKey) {
-  const item = localStorage.getItem(key);
-  return item ? JSON.parse(item) : null;
+interface LocalStorageShape {
+  [LOCALSTORAGE.USER]: User | null;
+  [LOCALSTORAGE.USER_PHONE]: string | null;
+  [LOCALSTORAGE.TOKEN]: string | null;
 }
 
-export function setLocalStorageItem(key: LocalStorageKey, value: unknown) {
+export function getLocalStorageItem<K extends LocalStorageKey>(
+  key: K,
+): LocalStorageShape[K] {
+  const item = localStorage.getItem(key);
+  if (item === null) return null;
+
+  try {
+    return JSON.parse(item);
+  } catch {
+    console.warn(`Failed to parse localStorage key "${key}"`);
+    return null;
+  }
+}
+
+export function setLocalStorageItem<K extends LocalStorageKey>(
+  key: K,
+  value: LocalStorageShape[K],
+): void {
+  if (value === undefined) {
+    console.warn(`Not saving undefined for key "${key}"`);
+    return;
+  }
+
+  if (value === null) {
+    localStorage.removeItem(key);
+    return;
+  }
+
   localStorage.setItem(key, JSON.stringify(value));
 }
 
