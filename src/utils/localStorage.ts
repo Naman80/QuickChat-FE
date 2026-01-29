@@ -1,9 +1,9 @@
 import type { User } from "../modules/internal/auth/AuthContext";
 
 export const LOCALSTORAGE = {
-  USER: "userDetails",
+  USER: "user",
   USER_PHONE: "userPhoneNumber",
-  TOKEN: "userAccessToken",
+  TOKEN: "accessToken",
 } as const;
 
 type LocalStorageKey = (typeof LOCALSTORAGE)[keyof typeof LOCALSTORAGE];

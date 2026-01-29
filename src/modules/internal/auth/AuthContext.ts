@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 export interface User {
   id: string;
   phone: string;
-  name?: string;
+  name: string;
 }
 
 export type AuthContextValue = {

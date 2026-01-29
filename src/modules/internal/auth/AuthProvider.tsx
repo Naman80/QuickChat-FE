@@ -30,7 +30,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send OTP");
+        const errReponseBody = await response.json();
+
+        throw new Error(errReponseBody.error);
       }
 
       // Store phone number temporarily for verification
@@ -59,8 +61,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const data = await response.json();
 
       // Store user data and token
-      setUser(data.userDetails);
-      setLocalStorageItem(LOCALSTORAGE.USER, data.userDetails);
+      setUser(data.user);
+      setLocalStorageItem(LOCALSTORAGE.USER, data.user);
       setLocalStorageItem(LOCALSTORAGE.TOKEN, data.accessToken);
       removeLocalStorageItem(LOCALSTORAGE.USER_PHONE);
     } catch (error) {
